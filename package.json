@@ -1,0 +1,33 @@
+{
+  "name": "courseservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc build",
+    "start": "npx tsc &&  node ./dist/app.ts",
+    "dev": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.11",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.598.0",
+    "@aws-sdk/lib-storage": "^3.598.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "kafkajs": "^2.2.4",
+    "mongoose": "^8.4.1",
+    "multer": "^1.4.5-lts.1"
+  }
+}
