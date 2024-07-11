@@ -4,6 +4,7 @@ import cors from "cors";
 import router from "./presentation/routes/courseRouter";
 import connectDb from "./config/db/connect";
 import cookieParser from "cookie-parser";
+import secondRouter from "./presentation/routes/buyCourseRouter";
 
 dotenv.config(); 
 
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Route setup
 app.use("/", router);
+app.use("/", secondRouter);
 
 // Database connection and server start
 connectDb

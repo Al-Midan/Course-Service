@@ -4,13 +4,14 @@ export interface ILesson {
   description: string;
   isFree: boolean;
   title: string;
+  video: string;
 }
 
 export interface ICourse extends Document {
-  title:string;
+  title: string;
   description: string;
   lessons: ILesson[];
-  video: string;
+  username: string;
   owner: Schema.Types.ObjectId;
   courseId: Schema.Types.ObjectId;
 }
@@ -39,7 +40,9 @@ const CourseSection: Schema = new Schema({
       },
     ],
   },
-
+  username: {
+    type: String,
+  },
   owner: {
     type: Schema.Types.ObjectId,
   },

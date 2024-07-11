@@ -7,8 +7,12 @@ const router = express.Router();
 const upload = multer();
 
 const repository = new CourseRepository();
-const user = new courseUseCase(repository);
-const controller = new courseController(user);
+const course = new courseUseCase(repository);
+const controller = new courseController(course);
 router.post('/createCourse',upload.single('courseImage'),controller.createCourse.bind(controller));
 router.post('/createSection', upload.any(),controller.createSection.bind(controller));
+router.get('/getCourse',controller.getCourse.bind(controller));
+router.get('/getallCourse',controller.getAllCourse.bind(controller));
+router.get('/getCourseDetails/:courseId',controller.getCourseDetails.bind(controller));
+router.get('/blockCourse/:courseId',controller.blockCourse.bind(controller));
 export default router;

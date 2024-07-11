@@ -1,5 +1,7 @@
+import { IisBlock } from "../../domain/entities/blockCourse";
 import { CourseReturn } from "../../domain/entities/courseReturn";
 import { returnSection } from "../../domain/entities/sectionReturn";
+import { CourseDocument } from "../../infrastructure/database/Model/Course";
 import { ICourseRepository } from "../../infrastructure/interface/ICourseRepository";
 import { ReceivedData } from "../../presentation/controller/interface";
 import { IcourseUsecase } from "../interface/IcourseUsecase";
@@ -16,8 +18,20 @@ export class courseUseCase implements IcourseUsecase {
     const returnCourse = await this.repository.courseCreation(courseData);
     return returnCourse ? returnCourse : null;
   }
-  async createCourseSection(extractedData:any):Promise<returnSection | null>{
+  async createCourseSection(extractedData:any):Promise<returnSection[] | null>{
     const returnSection = await this.repository.courseSection(extractedData);
     return returnSection ? returnSection : null;
+  }
+  async getallCourse():Promise<CourseDocument[] | null | undefined>{
+      const getCourse = await this.repository.getAllCourse();
+      return getCourse ? getCourse: null;
+  }
+  async getCourseDetails(courseId:any):Promise<any>{
+    const getCourseDetails = await this.repository.getCourseDetails(courseId);
+    return getCourseDetails ? getCourseDetails:null;
+  }
+  async blockCourse(values:IisBlock):Promise<any>{
+    const getBlockDetails = await this.repository.getBlockDetails(values);
+    return getBlockDetails ? getBlockDetails:null;
   }
 }

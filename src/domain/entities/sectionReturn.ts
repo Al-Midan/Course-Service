@@ -13,6 +13,7 @@ export interface returnSection {
   lessons: Lesson[];
   owner: ObjectId;
   courseId: ObjectId;
+  username:string;
   _id: ObjectId;
   __v: number;
 }

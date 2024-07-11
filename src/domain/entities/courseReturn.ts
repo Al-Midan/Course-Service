@@ -1,6 +1,5 @@
-import { ILesson } from "../../infrastructure/database/Model/CourseSection";
-
 export interface CourseReturn {
+  username:string;
   _id?: unknown;
   userId?: string;
   courseName: string;
@@ -9,5 +8,6 @@ export interface CourseReturn {
   coursePrice: number;
   courseImage: string;
   sections: { sectionId: string | null }[];
+  isBlock: boolean;
 }
 
