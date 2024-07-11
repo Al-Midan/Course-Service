@@ -144,7 +144,7 @@ export class courseController {
       res.status(200).json({ message: 'Course block status updated successfully',response}); 
     } catch (error) {
       console.error(error); 
-      res.status(500).json({ error: 'Internal Server Error' }); 
+      res.status(500).json({ error: 'Internal Server Error in Course Block' }); 
     }
   }
   

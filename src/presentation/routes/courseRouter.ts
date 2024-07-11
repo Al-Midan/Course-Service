@@ -14,5 +14,5 @@ router.post('/createSection', upload.any(),controller.createSection.bind(control
 router.get('/getCourse',controller.getCourse.bind(controller));
 router.get('/getallCourse',controller.getAllCourse.bind(controller));
 router.get('/getCourseDetails/:courseId',controller.getCourseDetails.bind(controller));
-router.get('/blockCourse/:courseId',controller.blockCourse.bind(controller));
+router.put('/blockCourse/:courseId',controller.blockCourse.bind(controller));
 export default router;
