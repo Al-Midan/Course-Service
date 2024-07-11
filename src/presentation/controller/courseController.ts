@@ -135,13 +135,17 @@ export class courseController {
       });
     }
   }
-  async blockCourse(req:Request,res:Response){
+  async blockCourse(req: Request, res: Response) {
     try {
       const { courseId } = req.params;
-    const { isBlock } = req.body;
-      const response = await this.courseUsecase.blockCourse(courseId, isBlock);
+      const { isBlock } = req.body;
+      const values = { courseId, isBlock };
+      const response = await this.courseUsecase.blockCourse(values);
+      res.status(200).json({ message: 'Course block status updated successfully',response}); 
     } catch (error) {
-      
+      console.error(error); 
+      res.status(500).json({ error: 'Internal Server Error' }); 
     }
   }
+  
 }
