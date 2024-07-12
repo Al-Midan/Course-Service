@@ -12,5 +12,6 @@ secondRouter.get('/getCourseWithId/:id',controller.getCourseWithId.bind(controll
 secondRouter.get('/getEnrolledCourseWithId/:id',controller.getEnrolledCourseWithId.bind(controller))
 secondRouter.post('/checkUserAccess',controller.checkUserAccess.bind(controller))
 secondRouter.get('/enrolledUserDetails/:id',controller.enrolledUserDetails.bind(controller))
+secondRouter.post('/lessonCompleted/',controller.lessonCompleted.bind(controller))
 
 export default secondRouter;

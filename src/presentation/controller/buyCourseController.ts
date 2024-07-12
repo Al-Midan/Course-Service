@@ -28,11 +28,18 @@ export class BuyCourseController {
 
         if (order) {
           try {
-            const response = await this.buyCourseUseCase.buyCourse(order, values);
-            res.status(200).json({ message: "Course purchase successful", response });
+            const response = await this.buyCourseUseCase.buyCourse(
+              order,
+              values
+            );
+            res
+              .status(200)
+              .json({ message: "Course purchase successful", response });
           } catch (error) {
             console.error("Error in buyCourseUseCase:", error);
-            res.status(500).json({ message: "Error processing course purchase" });
+            res
+              .status(500)
+              .json({ message: "Error processing course purchase" });
           }
         }
       });
@@ -46,7 +53,9 @@ export class BuyCourseController {
     try {
       const userId = req.params.id;
       const response = await this.buyCourseUseCase.getCourseWithId(userId);
-      res.status(200).json({ message: "Course fetched successfully", response });
+      res
+        .status(200)
+        .json({ message: "Course fetched successfully", response });
     } catch (error) {
       console.error("Error fetching course:", error);
       res.status(500).json({ message: "Failed to fetch course" });
@@ -56,8 +65,12 @@ export class BuyCourseController {
   async getEnrolledCourseWithId(req: Request, res: Response) {
     try {
       const userId = req.params.id;
-      const response = await this.buyCourseUseCase.getEnrolledCourseWithId(userId);
-      res.status(200).json({ message: "Enrolled course fetched successfully", response });
+      const response = await this.buyCourseUseCase.getEnrolledCourseWithId(
+        userId
+      );
+      res
+        .status(200)
+        .json({ message: "Enrolled course fetched successfully", response });
     } catch (error) {
       console.error("Error fetching enrolled course:", error);
       res.status(500).json({ message: "Failed to fetch enrolled course" });
@@ -67,23 +80,49 @@ export class BuyCourseController {
   async checkUserAccess(req: Request, res: Response) {
     try {
       const values = req.body;
-      const response = await this.buyCourseUseCase.checkUserAccess(values);
-      res.status(200).json({ message: "Access found", response });
+      const dbResponse = await this.buyCourseUseCase.checkUserAccess(values);
+      let value = "Not Enrolled";
+      let owner = "Owner";
+      if (dbResponse === value || dbResponse === owner) {
+        res.status(200).json({ message: "Access found", response: dbResponse });
+      } else {
+        let Enrolled = "Enrolled";
+        const response = { Enrolled, ...dbResponse };
+        res.status(200).json({ message: "Access found", response });
+      }
     } catch (error) {
       console.error("Error checking user access:", error);
       res.status(500).json({ message: "An unexpected error occurred" });
     }
   }
-
   async enrolledUserDetails(req: Request, res: Response) {
     try {
       const userId = req.params.id;
       const response = await this.buyCourseUseCase.enrolledUserDetails(userId);
-      res.status(200).json({ message: "Enrolled user details fetched successfully", response });
+      res
+        .status(200)
+        .json({
+          message: "Enrolled user details fetched successfully",
+          response,
+        });
     } catch (error) {
       console.error("Error fetching enrolled user details:", error);
-      res.status(500).json({ message: "Failed to fetch enrolled user details" });
+      res
+        .status(500)
+        .json({ message: "Failed to fetch enrolled user details" });
     }
   }
-  
+  async lessonCompleted(req: Request, res: Response){
+    try {
+      const values =   req.body;
+      const resposne  = await this.buyCourseUseCase.lessonCompleted(values);
+      res.status(200).json({message:"Lesson completed successfully", resposne})
+    } catch (error) {
+      console.error("Error fetching enrolled user details:", error);
+      res
+        .status(500)
+        .json({ message: "Failed to Update Lesson Completion" });
+    }
+
+  }
 }

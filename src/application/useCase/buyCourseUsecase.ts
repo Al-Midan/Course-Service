@@ -1,4 +1,5 @@
 import { Reque } from "../../domain/entities/checkUser";
+import { lessonType } from "../../domain/entities/lessonType";
 import { Requesttype } from "../../domain/entities/requestReturn";
 import { IBuyCourseRepository } from "../../infrastructure/interface/IBuyCourseRepository";
 import { IBuyCourseUseCase } from "../interface/IBuyCourseUseCase";
@@ -28,6 +29,10 @@ export class buyCourseUseCase implements IBuyCourseUseCase{
     }
     async enrolledUserDetails(userId:string){
         const response = await this.respoistory.enrolledUserDetails(userId);
+        return response ? response : null;
+    }
+    async lessonCompleted(values:lessonType){
+        const response = await this.respoistory.lessonCompleted(values);
         return response ? response : null;
     }
 }
