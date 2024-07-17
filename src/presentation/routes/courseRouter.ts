@@ -15,4 +15,5 @@ router.get('/getCourse',controller.getCourse.bind(controller));
 router.get('/getallCourse',controller.getAllCourse.bind(controller));
 router.get('/getCourseDetails/:courseId',controller.getCourseDetails.bind(controller));
 router.put('/blockCourse/:courseId',controller.blockCourse.bind(controller));
+export const handleEnrolledCoursesRequest = controller.handleEnrolledCoursesRequest.bind(controller);
 export default router;

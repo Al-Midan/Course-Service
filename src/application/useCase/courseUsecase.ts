@@ -34,4 +34,8 @@ export class courseUseCase implements IcourseUsecase {
     const getBlockDetails = await this.repository.getBlockDetails(values);
     return getBlockDetails ? getBlockDetails:null;
   }
+  async getAllEnrolledCourses(userId:string){
+    const getAllEnrolledDb = await this.repository.getAllEnrolledCourses(userId);
+    return getAllEnrolledDb ? getAllEnrolledDb:null;
+  }
 }

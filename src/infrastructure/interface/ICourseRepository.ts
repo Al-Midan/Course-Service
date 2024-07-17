@@ -9,5 +9,6 @@ export interface ICourseRepository {
      courseSection(extractedData:any):Promise<returnSection[] | null>;
      getAllCourse():Promise<CourseDocument[] | null | undefined>
      getCourseDetails(courseId:any):any
+     getAllEnrolledCourses(userId:string):any
      getBlockDetails(values:IisBlock):any
 }

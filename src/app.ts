@@ -5,8 +5,10 @@ import router from "./presentation/routes/courseRouter";
 import connectDb from "./config/db/connect";
 import cookieParser from "cookie-parser";
 import secondRouter from "./presentation/routes/buyCourseRouter";
+import { kafkaProducer } from "./infrastructure/broker/kafkaBroker/kafkaProducer"; 
+import { consumeEnrolledCoursesRequests } from "./infrastructure/broker/kafkaBroker/kafkaConsumer"; 
 
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
 
@@ -25,19 +27,31 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", router);
 app.use("/", secondRouter);
 
-// Database connection and server start
-connectDb
-  .then(() => {
+async function startApp() {
+  try {
+    // Connect to MongoDB
+    await connectDb;
     console.log("MongoDB connected successfully");
+
+    // Initialize Kafka producer
+    await kafkaProducer.connect();
+    console.log("Kafka producer connected successfully");
+
+    // Start consuming enrolled courses requests
+    await consumeEnrolledCoursesRequests();
+    console.log("Kafka consumer started successfully");
 
     // Start the server
     const PORT = process.env.PORT || 5002;
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  })
-  .catch((err: any) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
+  } catch (err) {
+    console.error("Error starting the application:", err);
+    process.exit(1);
+  }
+}
+
+startApp();
 
 export default app;

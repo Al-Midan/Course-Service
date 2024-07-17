@@ -8,6 +8,7 @@ import { returnSection } from "../../domain/entities/sectionReturn";
 import { CourseDetails } from "../../domain/entities/courseDetails";
 import { Lesson, Section } from "../../presentation/controller/interface";
 import { IisBlock } from "../../domain/entities/blockCourse";
+import { Enrollment } from "../database/Model/CoursePayment";
 export class CourseRepository implements ICourseRepository {
   async courseCreation(courseData: CourseType): Promise<CourseDocument | null> {
     //   const kafka = new Kafka({
@@ -26,14 +27,14 @@ export class CourseRepository implements ICourseRepository {
     // await consumer.run({
     //   eachMessage: async ({ topic, partition, message }) => {
     //     // if (message.value) {
-    //     //   console.log("message: " + JSON.stringify(message.value));    
+    //     //   console.log("message: " + JSON.stringify(message.value));
     //     //  // const parsedData = JSON.parse(message.value.toString());
     //     //  userId = message.value._id;
     //     //  // userId = parsedData._id;
     //     // }
     //     if (message.value) {
     //       const valueString = message.value.toString('utf8');
-    //       console.log("message: " + valueString);    
+    //       console.log("message: " + valueString);
     //       const parsedData = JSON.parse(valueString);
     //       userId = parsedData._id;
     //   }
@@ -52,7 +53,7 @@ export class CourseRepository implements ICourseRepository {
 
     // Prepare course data for saving
     const courseDatas = {
-      username:courseData.userData.username,
+      username: courseData.userData.username,
       userId: courseData.userData._id,
       courseName: courseData.courseName,
       courseDescription: courseData.courseDescription,
@@ -68,92 +69,97 @@ export class CourseRepository implements ICourseRepository {
 
     return savedCourse ? savedCourse : null;
   }
-  
-async courseSection(extractedData: any): Promise<returnSection[] | null> {
-  const { userData, courseId, videos } = extractedData;
-  const sections: Section[] = Object.values(extractedData).filter((value: any): value is Section => 
-    value && typeof value === 'object' && 'title' in value && 'lessons' in value
-  );
 
-  const videoUrls: string[] = [];
-
-  for (const video of videos) {
-    const s3Response: any = await uploadS3Video(video);
-    if (s3Response.error) {
-      console.error("Error uploading video to S3:", s3Response.error);
-      throw new Error("Failed to upload video to S3");
-    }
-    console.log("URL of the video from the S3 bucket:", s3Response.Location);
-    videoUrls.push(s3Response.Location);
-  }
-
-  const createdSections: returnSection[] = [];
-
-  for (const section of sections) {
-    const newSection: any = new CourseSection({
-      title: section.title,
-      description: section.description,
-      lessons: section.lessons.map((lesson: Lesson, index: number) => ({
-        ...lesson,
-        video: videoUrls[index],
-      })),
-      username: userData.username,
-      owner: userData._id,
-      courseId: courseId,
-    });
-
-    const savedSection = await newSection.save();
-    createdSections.push(savedSection);
-
-    await Course.findOneAndUpdate(
-      { _id: courseId },
-      { $push: { sections: { sectionId: savedSection._id } } },
-      { new: true }
+  async courseSection(extractedData: any): Promise<returnSection[] | null> {
+    const { userData, courseId, videos } = extractedData;
+    const sections: Section[] = Object.values(extractedData).filter(
+      (value: any): value is Section =>
+        value &&
+        typeof value === "object" &&
+        "title" in value &&
+        "lessons" in value
     );
-  }
 
-  console.log("Course sections and videos successfully uploaded and saved.", createdSections);
-  return createdSections.length > 0 ? createdSections : null;
-}
+    const videoUrls: string[] = [];
+
+    for (const video of videos) {
+      const s3Response: any = await uploadS3Video(video);
+      if (s3Response.error) {
+        console.error("Error uploading video to S3:", s3Response.error);
+        throw new Error("Failed to upload video to S3");
+      }
+      console.log("URL of the video from the S3 bucket:", s3Response.Location);
+      videoUrls.push(s3Response.Location);
+    }
+
+    const createdSections: returnSection[] = [];
+
+    for (const section of sections) {
+      const newSection: any = new CourseSection({
+        title: section.title,
+        description: section.description,
+        lessons: section.lessons.map((lesson: Lesson, index: number) => ({
+          ...lesson,
+          video: videoUrls[index],
+        })),
+        username: userData.username,
+        owner: userData._id,
+        courseId: courseId,
+      });
+
+      const savedSection = await newSection.save();
+      createdSections.push(savedSection);
+
+      await Course.findOneAndUpdate(
+        { _id: courseId },
+        { $push: { sections: { sectionId: savedSection._id } } },
+        { new: true }
+      );
+    }
+
+    console.log(
+      "Course sections and videos successfully uploaded and saved.",
+      createdSections
+    );
+    return createdSections.length > 0 ? createdSections : null;
+  }
   async getAllCourse(): Promise<CourseDocument[] | null | undefined> {
     try {
       const getAllCourse = await Course.find();
-      console.log("getAllCourse",getAllCourse);
-      
+      console.log("getAllCourse", getAllCourse);
+
       return getAllCourse ? getAllCourse : null;
     } catch (error) {
       console.log("Error in Getting All Course", error);
-      
     }
   }
-  async getCourseDetails(courseId: any):Promise<any>{
+  async getCourseDetails(courseId: any): Promise<any> {
     try {
-      const course = await Course.findById(courseId).lean(); 
+      const course = await Course.findById(courseId).lean();
       if (course) {
-        const sectionIds = course.sections.map(section => section.sectionId);
+        const sectionIds = course.sections.map((section) => section.sectionId);
         const sections = await CourseSection.find({
-          '_id': { $in: sectionIds }
-        }).lean(); 
-  
+          _id: { $in: sectionIds },
+        }).lean();
+
         console.log("course", course);
         console.log("sections", sections);
-  
- 
-        const formattedSections = sections.map(section => ({
-         ...section,
+
+        const formattedSections = sections.map((section) => ({
+          ...section,
           sectionId: section._id,
         }));
-  
+
         return {
-         ...course,
-          sections: formattedSections, 
+          ...course,
+          sections: formattedSections,
         };
       } else {
-        return null; 
+        return null;
       }
     } catch (error) {
       console.error(error);
-      return null; 
+      return null;
     }
   }
   async getBlockDetails(values: IisBlock) {
@@ -164,12 +170,26 @@ async courseSection(extractedData: any): Promise<returnSection[] | null> {
         { isBlock },
         { new: true }
       );
-      return updatedCourse || null; 
-  
+      return updatedCourse || null;
     } catch (error) {
-      console.error("Error in Course Block Repository",error); 
-      return null; 
+      console.error("Error in Course Block Repository", error);
+      return null;
     }
   }
-  
+  async getAllEnrolledCourses(userId: string) {
+    try {
+      const enrolled = await Enrollment.find({ studentid: userId });
+      if (enrolled.length === 0) {
+        return [];
+      }
+      const courseIds = enrolled.map((course) => course.courseid);
+      const EnrolledAllCourse = await Course.find({
+        _id: { $in: courseIds },
+      }).lean();
+      return EnrolledAllCourse;
+    } catch (error) {
+      console.error("error in ALl Enrolled Courses", error);
+      throw error;
+    }
+  }
 }

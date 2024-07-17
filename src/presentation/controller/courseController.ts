@@ -1,17 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { IcourseUsecase } from "../../application/interface/IcourseUsecase";
 import { ReceivedData } from "./interface";
+import { kafkaProducer, sendEnrolledCoursesResponse } from "../../infrastructure/broker/kafkaBroker/kafkaProducer";
 
 export class courseController {
   private courseUsecase: IcourseUsecase;
+
   constructor(courseUsecase: IcourseUsecase) {
     this.courseUsecase = courseUsecase;
   }
   async createCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("Received data:", req.body);
-      console.log("Received file:", req.file);
-
       const {
         courseName,
         courseDescription,
@@ -147,5 +146,13 @@ export class courseController {
       res.status(500).json({ error: 'Internal Server Error in Course Block' }); 
     }
   }
-  
+   async handleEnrolledCoursesRequest(userId: string) {
+    try {
+      const courses = await this.courseUsecase.getAllEnrolledCourses(userId);
+      await kafkaProducer.sendEnrolledCoursesResponse(userId, courses || []);
+    } catch (error) {
+      console.error(`Error handling request for user ${userId}:`, error);
+      await kafkaProducer.sendEnrolledCoursesResponse(userId, { error: 'An error occurred while fetching courses' });
+    }
+  }
 }

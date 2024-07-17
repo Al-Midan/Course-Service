@@ -9,6 +9,7 @@ import { CourseType } from "./courseData";
 export interface IcourseUsecase {
     createCourse(userData:CourseType):Promise<CourseReturn | null>;
     createCourseSection(extractedData:any):Promise<returnSection[] | null>;
+    getAllEnrolledCourses(userId:string):Promise<returnSection[] | null>;
     getallCourse():Promise<CourseDocument[] | null | undefined>
     getCourseDetails(courseId:any):any;
     blockCourse(Values:IisBlock):any;
