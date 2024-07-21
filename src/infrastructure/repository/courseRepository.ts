@@ -20,7 +20,6 @@ export class CourseRepository implements ICourseRepository {
     }
 
     console.log("URL of the image from the S3 bucket:", s3Response.Location);
-    const encrypted = encrypt(s3Response.Location);
     // Prepare course data for saving
     const courseDatas = {
       username: courseData.userData.username,
@@ -29,7 +28,7 @@ export class CourseRepository implements ICourseRepository {
       courseDescription: courseData.courseDescription,
       courseCategory: courseData.courseCategory,
       coursePrice: courseData.coursePrice,
-      courseImage: encrypted,
+      courseImage: s3Response.Location,
     };
 
     // Save course data to the database
@@ -50,7 +49,7 @@ export class CourseRepository implements ICourseRepository {
         "lessons" in value
     );
 
-    const videoUrls: string[] = [];
+    const encryptedVideoUrls: string[] = [];
 
     for (const video of videos) {
       const s3Response: any = await uploadS3Video(video);
@@ -59,7 +58,9 @@ export class CourseRepository implements ICourseRepository {
         throw new Error("Failed to upload video to S3");
       }
       console.log("URL of the video from the S3 bucket:", s3Response.Location);
-      videoUrls.push(s3Response.Location);
+
+      const encryptedUrl =  encrypt(s3Response.Location);
+      encryptedVideoUrls.push(encryptedUrl);
     }
 
     const createdSections: returnSection[] = [];
@@ -70,7 +71,7 @@ export class CourseRepository implements ICourseRepository {
         description: section.description,
         lessons: section.lessons.map((lesson: Lesson, index: number) => ({
           ...lesson,
-          video: videoUrls[index],
+          video: encryptedVideoUrls[index],
         })),
         username: userData.username,
         owner: userData._id,
@@ -88,7 +89,7 @@ export class CourseRepository implements ICourseRepository {
     }
 
     console.log(
-      "Course sections and videos successfully uploaded and saved.",
+      "Course sections and encrypted video URLs successfully uploaded and saved.",
       createdSections
     );
     return createdSections.length > 0 ? createdSections : null;
