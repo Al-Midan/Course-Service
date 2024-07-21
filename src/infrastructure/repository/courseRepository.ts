@@ -9,39 +9,9 @@ import { CourseDetails } from "../../domain/entities/courseDetails";
 import { Lesson, Section } from "../../presentation/controller/interface";
 import { IisBlock } from "../../domain/entities/blockCourse";
 import { Enrollment } from "../database/Model/CoursePayment";
+import { encrypt } from "../../middleware/encryptionMiddleware";
 export class CourseRepository implements ICourseRepository {
   async courseCreation(courseData: CourseType): Promise<CourseDocument | null> {
-    //   const kafka = new Kafka({
-    //     clientId: "my-app",
-    //     brokers: ["localhost:29092"],
-    //   });
-
-    // const consumer = kafka.consumer({ groupId: "user-group" });
-    // await consumer.connect();
-    // await consumer.subscribe({
-    //   topic: "user-values-topic",
-    //   fromBeginning: true,
-    // });
-
-    // let userId;
-    // await consumer.run({
-    //   eachMessage: async ({ topic, partition, message }) => {
-    //     // if (message.value) {
-    //     //   console.log("message: " + JSON.stringify(message.value));
-    //     //  // const parsedData = JSON.parse(message.value.toString());
-    //     //  userId = message.value._id;
-    //     //  // userId = parsedData._id;
-    //     // }
-    //     if (message.value) {
-    //       const valueString = message.value.toString('utf8');
-    //       console.log("message: " + valueString);
-    //       const parsedData = JSON.parse(valueString);
-    //       userId = parsedData._id;
-    //   }
-    //   },
-    // });
-    // console.log("UserID"+userId);
-
     const s3Response: any = await uploadS3Image(courseData.courseImage);
     if (s3Response.error) {
       console.error("Error uploading image to S3:", s3Response.error);
@@ -50,7 +20,7 @@ export class CourseRepository implements ICourseRepository {
     }
 
     console.log("URL of the image from the S3 bucket:", s3Response.Location);
-
+    const encrypted = encrypt(s3Response.Location);
     // Prepare course data for saving
     const courseDatas = {
       username: courseData.userData.username,
@@ -59,7 +29,7 @@ export class CourseRepository implements ICourseRepository {
       courseDescription: courseData.courseDescription,
       courseCategory: courseData.courseCategory,
       coursePrice: courseData.coursePrice,
-      courseImage: s3Response.Location,
+      courseImage: encrypted,
     };
 
     // Save course data to the database
