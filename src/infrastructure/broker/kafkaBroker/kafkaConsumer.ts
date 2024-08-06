@@ -3,12 +3,13 @@ import { handleEnrolledCoursesRequest } from "../../../presentation/routes/cours
 
 class KafkaConsumer extends KafkaModule {
   constructor() {
-    super('course-service-consumer', ['localhost:9092']);
+    //super('course-service-consumer', ['localhost:9092']);
+    super("user-service-producer", ["kafka:29092"]);
   }
 
   async consumeEnrolledCoursesRequests(): Promise<void> {
     await this.connect();
-    await this.subscribeToTopic('enrolled-courses-request');
+    await this.subscribeToTopic("enrolled-courses-request");
     await this.runConsumer(async (message) => {
       const messageData = JSON.parse(message.value!.toString());
       await handleEnrolledCoursesRequest(messageData.userId);
@@ -17,4 +18,5 @@ class KafkaConsumer extends KafkaModule {
 }
 
 const kafkaConsumer = new KafkaConsumer();
-export const consumeEnrolledCoursesRequests = () => kafkaConsumer.consumeEnrolledCoursesRequests();
+export const consumeEnrolledCoursesRequests = () =>
+  kafkaConsumer.consumeEnrolledCoursesRequests();

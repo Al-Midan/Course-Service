@@ -8,8 +8,9 @@ dotenv.config();
 // }
 
 
-let connect = "mongodb://localhost:27017/Al-Midan"
-const connectDb =  mongoose.connect(connect as string)
+let connect= process.env.MONGO_URL||"mongodb+srv://easanedumangad:ByKn7EYAqmsgqTl0@cluster0.eyvqmzv.mongodb.net/Al-Midan?retryWrites=true&w=majority"
+//"mongodb://localhost:27017/Al-Midan"
+const connectDb =  mongoose.connect(connect)
 .then(()=>console.log("Mongodb Conencted Successfully"))
 .catch((e)=>console.log("Mongodb Connection Failed",e));
 
