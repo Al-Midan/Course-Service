@@ -6,7 +6,7 @@ const s3config = new S3Client({
     accessKeyId:process.env.S3_ACCESS_KEY||"AKIAU5ZGISIVSEPALZNZ",
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY||"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",
   },
-  region: process.env.S3_REGION || "ap-south-1",
+  region: process.env.S3_REGION||"ap-south-1",
 });
 
 const uploadS3Video = async (file: any) => {
