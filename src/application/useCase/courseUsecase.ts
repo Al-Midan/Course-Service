@@ -38,4 +38,8 @@ export class courseUseCase implements IcourseUsecase {
     const getAllEnrolledDb = await this.repository.getAllEnrolledCourses(userId);
     return getAllEnrolledDb ? getAllEnrolledDb:null;
   }
+  async deleteCourse(courseId: string) {
+    const dbresponse = await this.repository.deleteCourseDb(courseId);
+    return dbresponse ? dbresponse : null;
+  }
 }

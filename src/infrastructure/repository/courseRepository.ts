@@ -163,4 +163,13 @@ export class CourseRepository implements ICourseRepository {
       throw error;
     }
   }
+  async deleteCourseDb(courseId: string) {
+    try {
+      const CourseDetails = await Course.findByIdAndDelete(courseId);
+      return CourseDetails ? CourseDetails : null;
+    } catch (error) {
+      console.log("Error Deleting Course ", error);
+      return null;
+    }
+  }
 }

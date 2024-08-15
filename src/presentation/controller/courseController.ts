@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { IcourseUsecase } from "../../application/interface/IcourseUsecase";
 import { ReceivedData } from "./interface";
-import { kafkaProducer, sendEnrolledCoursesResponse } from "../../infrastructure/broker/kafkaBroker/kafkaProducer";
+import {
+  kafkaProducer,
+  sendEnrolledCoursesResponse,
+} from "../../infrastructure/broker/kafkaBroker/kafkaProducer";
 
 export class courseController {
   private courseUsecase: IcourseUsecase;
@@ -140,19 +143,38 @@ export class courseController {
       const { isBlock } = req.body;
       const values = { courseId, isBlock };
       const response = await this.courseUsecase.blockCourse(values);
-      res.status(200).json({ message: 'Course block status updated successfully',response}); 
+      res.status(200).json({
+        message: "Course block status updated successfully",
+        response,
+      });
     } catch (error) {
-      console.error(error); 
-      res.status(500).json({ error: 'Internal Server Error in Course Block' }); 
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error in Course Block" });
     }
   }
-   async handleEnrolledCoursesRequest(userId: string) {
+  async handleEnrolledCoursesRequest(userId: string) {
     try {
       const courses = await this.courseUsecase.getAllEnrolledCourses(userId);
       await kafkaProducer.sendEnrolledCoursesResponse(userId, courses || []);
     } catch (error) {
       console.error(`Error handling request for user ${userId}:`, error);
-      await kafkaProducer.sendEnrolledCoursesResponse(userId, { error: 'An error occurred while fetching courses' });
+      await kafkaProducer.sendEnrolledCoursesResponse(userId, {
+        error: "An error occurred while fetching courses",
+      });
+    }
+  }
+  async deleteCourse(req: Request, res: Response) {
+    try {
+      const CourseId = req.params.id;
+      const response = await this.courseUsecase.deleteCourse(CourseId);
+      res
+        .status(200)
+        .json({ message: "Course Deleted Successfully", response });
+    } catch (error) {
+      console.error("error Occured While Delete The Course ", error);
+      res
+        .status(500)
+        .json({ message: "error Occured While Delete The Course " });
     }
   }
 }

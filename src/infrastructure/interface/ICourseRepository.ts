@@ -11,4 +11,5 @@ export interface ICourseRepository {
      getCourseDetails(courseId:any):any
      getAllEnrolledCourses(userId:string):any
      getBlockDetails(values:IisBlock):any
+     deleteCourseDb(courseId: string): Promise<CourseDocument | null>;
 }

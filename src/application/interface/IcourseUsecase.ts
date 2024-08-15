@@ -13,4 +13,5 @@ export interface IcourseUsecase {
     getallCourse():Promise<CourseDocument[] | null | undefined>
     getCourseDetails(courseId:any):any;
     blockCourse(Values:IisBlock):any;
+    deleteCourse(courseId: string): Promise<CourseDocument | null>;
 }
