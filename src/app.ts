@@ -12,13 +12,21 @@ dotenv.config();
 
 const app = express();
 
-// Middleware setup
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
+// cors setup
+const allowedOrigins = [
+  'https://al-midan-frontend.vercel.app',
+  'https://localhost:3000',
+  'http://13.71.112.129',
+  'https://peducoggsc.execute-api.ap-south-1.amazonaws.com'
+];
+const corsOptions = {
+  origin: allowedOrigins,
   optionsSuccessStatus: 200,
-}));
+  credentials: true,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

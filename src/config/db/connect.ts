@@ -8,7 +8,8 @@ dotenv.config();
 // }
 
 
-let connect= process.env.MONGO_URL||"mongodb+srv://easanedumangad:ByKn7EYAqmsgqTl0@cluster0.eyvqmzv.mongodb.net/Al-Midan?retryWrites=true&w=majority"
+let connect= process.env.MONGO_URL||"mongodb://mongodb-service:27017/Al-Midan"
+
 //"mongodb://localhost:27017/Al-Midan"
 const connectDb =  mongoose.connect(connect)
 .then(()=>console.log("Mongodb Conencted Successfully"))

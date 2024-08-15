@@ -4,7 +4,7 @@ import { handleEnrolledCoursesRequest } from "../../../presentation/routes/cours
 class KafkaConsumer extends KafkaModule {
   constructor() {
     //super('course-service-consumer', ['localhost:9092']);
-    super("user-service-producer", ["kafka:29092"]);
+    super("user-service-producer", ["kafka:9092"]);
   }
 
   async consumeEnrolledCoursesRequests(): Promise<void> {
