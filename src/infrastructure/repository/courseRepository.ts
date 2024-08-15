@@ -59,7 +59,7 @@ export class CourseRepository implements ICourseRepository {
       }
       console.log("URL of the video from the S3 bucket:", s3Response.Location);
 
-      const encryptedUrl =  encrypt(s3Response.Location);
+      const encryptedUrl = encrypt(s3Response.Location);
       encryptedVideoUrls.push(encryptedUrl);
     }
 
@@ -165,6 +165,15 @@ export class CourseRepository implements ICourseRepository {
   }
   async deleteCourseDb(courseId: string) {
     try {
+      const course = await Course.findById(courseId);
+
+      if (!course) {
+        console.log("Course not found");
+        return null;
+      }
+      const sectionIds = course.sections.map((section) => section.sectionId);
+      await CourseSection.deleteMany({ _id: { $in: sectionIds } });
+
       const CourseDetails = await Course.findByIdAndDelete(courseId);
       return CourseDetails ? CourseDetails : null;
     } catch (error) {
