@@ -10,6 +10,7 @@ import { Lesson, Section } from "../../presentation/controller/interface";
 import { IisBlock } from "../../domain/entities/blockCourse";
 import { Enrollment } from "../database/Model/CoursePayment";
 import { encrypt } from "../../middleware/encryptionMiddleware";
+import { UpdateCourseBody } from "../../domain/entities/UpdateCourse";
 export class CourseRepository implements ICourseRepository {
   async courseCreation(courseData: CourseType): Promise<CourseDocument | null> {
     const s3Response: any = await uploadS3Image(courseData.courseImage);
@@ -179,6 +180,58 @@ export class CourseRepository implements ICourseRepository {
     } catch (error) {
       console.log("Error Deleting Course ", error);
       return null;
+    }
+  }
+  async UpdateCourseDb(values: UpdateCourseBody) {
+    try {
+      const updatedCourse = await Course.findByIdAndUpdate(
+        values._id,
+        {
+          courseName: values.courseName,
+          courseDescription: values.courseDescription,
+          courseCategory: values.courseCategory,
+          coursePrice: values.coursePrice,
+          courseImage: values.courseImage,
+          userId: values.userId,
+          username: values.username,
+          sections: values.sections.map((section) => ({
+            sectionId: section._id,
+          })),
+        },
+        { new: true }
+      );
+
+      if (!updatedCourse) {
+        console.error("Course not found");
+        return null;
+      }
+
+      for (const section of values.sections) {
+        const sectionUpdate = {
+          title: section.title,
+          description: section.description,
+          lessons: section.lessons,
+          username: values.username,
+          owner: values.userId,
+          courseId: values._id,
+        };
+
+        await CourseSection.findOneAndUpdate(
+          { _id: section._id, courseId: values._id },
+          sectionUpdate,
+          { upsert: true }
+        );
+      }
+
+      await CourseSection.deleteMany({
+        courseId: values._id,
+        _id: { $nin: values.sections.map((s) => s._id) },
+      });
+
+      return updatedCourse ? updatedCourse : null;
+    } catch (error) {
+      console.error("Error in UpdateCourseDb", error);
+      throw error;
     }
   }
 }

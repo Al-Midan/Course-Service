@@ -177,4 +177,43 @@ export class courseController {
         .json({ message: "error Occured While Delete The Course " });
     }
   }
+  async updateCourse(req: Request, res: Response): Promise<void> {
+    try {
+      const {
+        _id,
+        courseName,
+        courseDescription,
+        courseCategory,
+        coursePrice,
+        courseImage,
+        sections,
+        userId,
+        username,
+      } = req.body;
+
+      const courseDetails = {
+        _id,
+        courseName,
+        courseDescription,
+        courseCategory,
+        coursePrice,
+        courseImage,
+        sections,
+        userId,
+        username,
+      };
+
+      const response = await this.courseUsecase.updateCourse(courseDetails);
+
+      res
+        .status(200)
+        .json({ message: "Course updated successfully", response });
+    } catch (error) {
+      console.error("Error updating course:", error);
+
+      res
+        .status(500)
+        .json({ error: "Internal Server Error during course update" });
+    }
+  }
 }
