@@ -3,15 +3,15 @@ import { Upload } from "@aws-sdk/lib-storage";
 
 const s3config = new S3Client({
   credentials: {
-    accessKeyId:process.env.S3_ACCESS_KEY||"AKIAU5ZGISIVSEPALZNZ",
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY||"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",
+    accessKeyId: process.env.S3_ACCESS_KEY || "",
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
   },
-  region: process.env.S3_REGION||"ap-south-1",
+  region: process.env.S3_REGION || "ap-south-1",
 });
 
 const uploadS3Video = async (file: any) => {
   const params = {
-    Bucket: process.env.COURSE_BUCKET_NAME||"almidancoursevideo",
+    Bucket: process.env.COURSE_BUCKET_NAME,
     Key: Date.now().toString() + "-" + file.originalname,
     Body: file.buffer,
     ContentType: file.mimetype,
@@ -35,7 +35,7 @@ const uploadS3Video = async (file: any) => {
 
 const uploadS3Image = async (file: any) => {
   const params = {
-    Bucket: process.env.COURSE_THUMBNAIL_BUCKET_NAME||"almidancoursethumbnail",
+    Bucket: process.env.COURSE_THUMBNAIL_BUCKET_NAME,
     Key: Date.now().toString() + "-" + file.originalname,
     Body: file.buffer,
     ContentType: file.mimetype,
